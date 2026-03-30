@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Super-Resolution ROI Lab</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb bg-orb-a"></div>
+    <div class="bg-orb bg-orb-b"></div>
+    <main class="app-shell">
+      <section class="hero card">
+        <div>
+          <p class="eyebrow">Local SR visualizer</p>
+          <h1>Upload an image, generate SR, then inspect any ROI you choose.</h1>
+          <p class="lede">
+            The preview pipeline runs locally with the checkpoint files in this workspace. Click anywhere on the preview to place the zoom box, then adjust the size with the slider.
+          </p>
+        </div>
+        <div class="hero-metrics">
+          <div class="metric">
+            <span class="metric-label">Scale</span>
+            <span class="metric-value">x2</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Model</span>
+            <span class="metric-value">SRCNN</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">ROI mode</span>
+            <span class="metric-value">Manual</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <aside class="controls card">
+          <div class="control-block">
+            <label class="file-drop" for="image-input">
+              <input id="image-input" type="file" accept="image/*" />
+              <span class="file-drop-title">Choose an image</span>
+              <span class="file-drop-subtitle">PNG, JPG, WEBP</span>
+            </label>
+          </div>
+
+          <div class="control-block">
+            <label for="box-size">Box size: <strong id="box-size-label">96 px</strong></label>
+            <input id="box-size" type="range" min="32" max="2000" value="96" step="1" />
+          </div>
+
+          <div class="control-block grid-two">
+            <div>
+              <label for="zoom-factor">Zoom</label>
+              <select id="zoom-factor">
+                <option value="2">2x</option>
+                <option value="3" selected>3x</option>
+                <option value="4">4x</option>
+                <option value="5">5x</option>
+              </select>
+            </div>
+            <div>
+              <label for="selection-mode">Pick from</label>
+              <select id="selection-mode">
+                <option value="bicubic" selected>Bicubic preview</option>
+                <option value="sr">SR preview</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="control-block buttons">
+            <button id="predict-btn" class="primary" disabled>Generate SR</button>
+            <button id="reset-btn" class="secondary" disabled>Reset ROI</button>
+          </div>
+
+          <div class="status-panel">
+            <div id="status-title" class="status-title">No image loaded yet</div>
+            <div id="status-body" class="status-body">Upload an image to start the local prediction pipeline.</div>
+          </div>
+        </aside>
+
+        <section class="viewer card">
+          <div class="viewer-header">
+            <div>
+              <h2>Full View</h2>
+              <p>Click on either preview to place the zoom box at that location.</p>
+            </div>
+            <div id="prediction-meta" class="prediction-meta">Waiting for input</div>
+          </div>
+
+          <div class="comparison-grid">
+            <div class="preview-panel">
+              <div class="panel-label watermark">Uploaded</div>
+              <div class="canvas-stage">
+                <canvas id="bicubic-canvas"></canvas>
+                <div id="bicubic-overlay" class="roi-overlay"></div>
+              </div>
+            </div>
+            <div class="preview-panel">
+              <div class="panel-label watermark">Resolution Increased</div>
+              <div class="canvas-stage">
+                <canvas id="sr-canvas"></canvas>
+                <div id="sr-overlay" class="roi-overlay"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="viewer-header zoom-header">
+            <div>
+              <h2>Selected ROI</h2>
+              <p>The same box is shown in both previews, then zoomed for pixel-level inspection.</p>
+            </div>
+          </div>
+
+          <div class="zoom-grid">
+            <div class="zoom-panel">
+              <div class="panel-label">Bicubic crop</div>
+              <canvas id="bicubic-zoom" class="zoom-canvas"></canvas>
+            </div>
+            <div class="zoom-panel">
+              <div class="panel-label">SR crop</div>
+              <canvas id="sr-zoom" class="zoom-canvas"></canvas>
+            </div>
+            <div class="zoom-panel">
+              <div class="panel-label">Absolute difference</div>
+              <canvas id="diff-zoom" class="zoom-canvas"></canvas>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <template id="empty-state-template">
+      <div class="empty-state">
+        <div class="empty-state-title">No preview yet</div>
+        <div class="empty-state-body">Load an image and run SR to populate this panel.</div>
+      </div>
+    </template>
+
+    <script type="module" src="/static/app.js"></script>
+  </body>
+</html>
